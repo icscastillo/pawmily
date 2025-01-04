@@ -1,8 +1,6 @@
-using System.Net.Sockets;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Specifications;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -26,7 +24,7 @@ namespace API.Controllers
         public async Task<ActionResult<IReadOnlyList<Pet>>> GetPets(string? type, char? gender, string? sort)
         {
             var spec = new PetSpecification(type, gender, sort);
-            var pets = await repo.GetAllPetsAsync(spec);
+            var pets = await repo.ListAsync(spec);
             // if (pets == null) return NotFound();
 
             return Ok(pets);
@@ -85,6 +83,13 @@ namespace API.Controllers
             }
             return BadRequest("Cannot delete record");
 
+        }
+
+        [HttpGet("types")]
+        public async Task<ActionResult<IReadOnlyList<string>>> GetTypes()
+        {
+            var spec = new TypeListSpecification();
+            return Ok(await repo.ListAsync(spec));
         }
 
         private bool PetExists(int id)
